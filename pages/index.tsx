@@ -104,15 +104,15 @@ export default function Home() {
     <>
       <GlobalCSS />
       <div className="container">
-        <h1>Adicionar Novo Tópico</h1>
+        <h1>Add New Topic</h1>
         <div className="form-container">          
           <input
             type="text"
             value={newTopic}
             onChange={(e) => setNewTopic(e.target.value)}
-            placeholder="Nome do Tópico"
+            placeholder="Topic name"
           />
-          <button onClick={addTopic}>Adicionar Tópico</button>
+          <button onClick={addTopic}>Add Topic</button>
         </div>
       </div>
 
@@ -149,24 +149,24 @@ export default function Home() {
             </div>
             <input
               type="text"
-              value={newSubtopic[currentTopicId!] || ""}
+              value={newSubtopic[currentTopicId] || ""}
               onChange={(e) =>
-                setNewSubtopic((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
+                setNewSubtopic((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
               placeholder="Nome do Subtópico"
             />
             <input
               type="text"
-              value={newSubtopicUrl[currentTopicId!] || ""}
+              value={newSubtopicUrl[currentTopicId] || ""}
               onChange={(e) =>
-                setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
+                setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
               placeholder="URL (opcional)"
             />
             <textarea
-              value={newSubtopicContent[currentTopicId!] || ""}
+              value={newSubtopicContent[currentTopicId] || ""}
               onChange={(e) =>
-                setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
+                setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
               placeholder="Conteúdo do subtópico"
             />
