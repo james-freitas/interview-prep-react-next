@@ -26,6 +26,9 @@ export default function Home() {
   const [newSubtopicContent, setNewSubtopicContent] = useState<{ [key: number]: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTopicId, setCurrentTopicId] = useState<number | null>(null);
+  const [isContentModalOpen, setIsContentModalOpen] = useState(false);
+  const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
+
 
   useEffect(() => {
     fetchTopics();
@@ -100,6 +103,17 @@ export default function Home() {
     fetchTopics();
   };
 
+  const openContentModal = (subtopic: Subtopic) => {
+    setSelectedSubtopic(subtopic);
+    setIsContentModalOpen(true);
+  };
+  
+  const closeContentModal = () => {
+    setIsContentModalOpen(false);
+    setSelectedSubtopic(null);
+  };
+  
+
   return (
     <>
       <GlobalCSS />
@@ -132,7 +146,12 @@ export default function Home() {
                     {subtopic.title}
                   </a>
                 </span>
-                {subtopic.content && <p className="content">{subtopic.content}</p>}  
+                {subtopic.content && (
+                  <button className="content-button" onClick={() => openContentModal(subtopic)}>
+                    View Content
+                  </button>
+                )}
+  
               </li>
             ))}
           </ul>
@@ -171,6 +190,18 @@ export default function Home() {
               placeholder="Conteúdo do subtópico"
             />
             <button onClick={addSubtopic}>Adicionar</button>
+          </div>
+        </div>
+      )}
+
+      {isContentModalOpen && selectedSubtopic && (
+        <div className="modal" onClick={closeContentModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{selectedSubtopic.title}</h2>
+              <button className="modal-close-content" onClick={closeContentModal}>&times;</button>
+            </div>
+            <p>{selectedSubtopic.content}</p>
           </div>
         </div>
       )}

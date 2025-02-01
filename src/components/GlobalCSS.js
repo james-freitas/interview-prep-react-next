@@ -119,20 +119,55 @@ button:hover {
 
 .modal-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: left;
 }
 
 .modal-header h2 {
   font-size: 20px;
+  margin-left: 0%;
+  padding-bottom: 2%;
+}
+
+.modal-close-content {
+  margin-top: -1%;
+  margin-left: 33%;
+  cursor: pointer;
+  position: absolute;
+  font-size: 16px; /* Reduce font size */
+  border: none;
+  background:rgb(82, 79, 245);
+  padding: 5px 10px; /* Reduce padding */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px; /* Set a fixed width */
+  height: 30px; /* Set a fixed height */
+  border-radius: 20%; /* Make it circular */
 }
 
 .modal-close {
+  margin-top: -1%;
+  margin-left: 46%;
   cursor: pointer;
-  font-size: 20px;
+  position: absolute;
+  font-size: 16px; /* Reduce font size */
   border: none;
-  background: none;
+  background:rgb(82, 79, 245);
+  padding: 5px 10px; /* Reduce padding */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px; /* Set a fixed width */
+  height: 30px; /* Set a fixed height */
+  border-radius: 20%; /* Make it circular */
+}
+
+.modal-close:hover {
+  background: rgba(245, 52, 52, 0.73);
+}
+
+.modal-close-content:hover {
+  background: rgba(245, 52, 52, 0.73);
 }
 
 /* Inputs dentro do modal */
@@ -145,12 +180,25 @@ textarea {
   margin-top: 5px;
 }
 
+.content-button {
+  background-color: #0056b3;
+  color:rgb(239, 242, 245);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 5px;
+}
+
+.content-button:hover {
+  background-color: #007bff;
+}
+
+
 /* Responsividade */
 @media (max-width: 480px) {
   .modal-content {
     width: 95%;
   }
 }
-
 
 `;
