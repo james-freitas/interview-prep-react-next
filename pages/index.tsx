@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from '../lib/supabase';
-import styled from "styled-components"
-import { CSSReset } from "../src/components/CSSReset";
+import { GlobalCSS } from "../src/components/GlobalCSS";
 
 interface Subtopic {
   id: number;
@@ -25,6 +24,8 @@ export default function Home() {
   const [newSubtopic, setNewSubtopic] = useState<{ [key: number]: string }>({});
   const [newSubtopicUrl, setNewSubtopicUrl] = useState<{ [key: number]: string }>({});
   const [newSubtopicContent, setNewSubtopicContent] = useState<{ [key: number]: string }>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentTopicId, setCurrentTopicId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTopics();
@@ -64,45 +65,54 @@ export default function Home() {
       .from("subtopics")
       .update({ completed: !completed })
       .eq("id", subtopicId);
-
     fetchTopics();
   };
 
-  const addSubtopic = async (topicId: number) => {
-    if (!newSubtopic[topicId]?.trim()) return;
+  const openModal = (topicId: number) => {
+    console.log("Abrindo modal para o tópico:", topicId);
+    setCurrentTopicId(topicId);
+    setIsModalOpen(true);
+  };
+  
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentTopicId(null);
+  };
+
+  const addSubtopic = async () => {
+    if (!currentTopicId || !newSubtopic[currentTopicId]?.trim()) return;
     await supabase
       .from("subtopics")
       .insert([
         { 
-          title: newSubtopic[topicId], 
-          topic_id: topicId, 
+          title: newSubtopic[currentTopicId], 
+          topic_id: currentTopicId, 
           completed: false,
-          url: newSubtopicUrl[topicId] || "", 
-          content: newSubtopicContent[topicId] || ""  
+          url: newSubtopicUrl[currentTopicId] || "", 
+          content: newSubtopicContent[currentTopicId] || ""  
         }
       ]);
-    setNewSubtopic((prev) => ({ ...prev, [topicId]: "" }));
-    setNewSubtopicUrl((prev) => ({ ...prev, [topicId]: "" }));
-    setNewSubtopicContent((prev) => ({ ...prev, [topicId]: "" }));
+    setNewSubtopic((prev) => ({ ...prev, [currentTopicId]: "" }));
+    setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId]: "" }));
+    setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId]: "" }));
+    closeModal();
     fetchTopics();
   };
 
   return (
     <>
-      <CSSReset />
-
+      <GlobalCSS />
       <div className="container">
-        <h1>Topic List</h1>
-
-        <div className="form-container">
-        <h2>Adicionar Novo Tópico</h2>
-        <input
-          type="text"
-          value={newTopic}
-          onChange={(e) => setNewTopic(e.target.value)}
-          placeholder="Nome do Tópico"
-        />
-        <button onClick={addTopic}>Adicionar Tópico</button>
+        <h1>Adicionar Novo Tópico</h1>
+        <div className="form-container">          
+          <input
+            type="text"
+            value={newTopic}
+            onChange={(e) => setNewTopic(e.target.value)}
+            placeholder="Nome do Tópico"
+          />
+          <button onClick={addTopic}>Adicionar Tópico</button>
         </div>
       </div>
 
@@ -117,7 +127,7 @@ export default function Home() {
                   checked={subtopic.completed}
                   onChange={() => toggleSubtopic(subtopic.id, subtopic.completed)}
                 />
-                <span className={subtopic.completed ? "completed" : ""}>
+                <span className={subtopic.completed ? "completed" : "not-completed"}>
                   <a href={subtopic.url} target="_blank" rel="noopener noreferrer">
                     {subtopic.title}
                   </a>
@@ -126,37 +136,44 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <button onClick={() => openModal(topic.id)}>Adicionar Subtópico</button>
+        </div>
+      ))}
 
-          <div className="input-container">
+      {isModalOpen && (
+        <div className="modal" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Adicionar Subtópico</h2>
+              <button className="modal-close" onClick={closeModal}>&times;</button>
+            </div>
             <input
               type="text"
-              value={newSubtopic[topic.id] || ""}
+              value={newSubtopic[currentTopicId!] || ""}
               onChange={(e) =>
-                setNewSubtopic((prev) => ({ ...prev, [topic.id]: e.target.value }))
+                setNewSubtopic((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
               }
-              placeholder="Novo Subtópico"
+              placeholder="Nome do Subtópico"
             />
             <input
               type="text"
-              value={newSubtopicUrl[topic.id] || ""}
+              value={newSubtopicUrl[currentTopicId!] || ""}
               onChange={(e) =>
-                setNewSubtopicUrl((prev) => ({ ...prev, [topic.id]: e.target.value }))
+                setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
               }
               placeholder="URL (opcional)"
             />
             <textarea
-              value={newSubtopicContent[topic.id] || ""}
+              value={newSubtopicContent[currentTopicId!] || ""}
               onChange={(e) =>
-                setNewSubtopicContent((prev) => ({ ...prev, [topic.id]: e.target.value }))
+                setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId!]: e.target.value }))
               }
               placeholder="Conteúdo do subtópico"
             />
-            <button onClick={() => addSubtopic(topic.id)}>Adicionar</button>
+            <button onClick={addSubtopic}>Adicionar</button>
           </div>
         </div>
-      ))}
-    
-
+      )}
     </>
   );
 }
