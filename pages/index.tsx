@@ -148,14 +148,14 @@ export default function Home() {
                 </span>
                 {subtopic.content && (
                   <button className="content-button" onClick={() => openContentModal(subtopic)}>
-                    View Content
+                    View Additional Content
                   </button>
                 )}
   
               </li>
             ))}
           </ul>
-          <button onClick={() => openModal(topic.id)}>Adicionar Subtópico</button>
+          <button onClick={() => openModal(topic.id)}>Add Subtopic</button>
         </div>
       ))}
 
@@ -163,7 +163,7 @@ export default function Home() {
         <div className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Adicionar Subtópico</h2>
+              <h2>Add Subtopic</h2>
               <button className="modal-close" onClick={closeModal}>&times;</button>
             </div>
             <input
@@ -172,7 +172,7 @@ export default function Home() {
               onChange={(e) =>
                 setNewSubtopic((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
-              placeholder="Nome do Subtópico"
+              placeholder="Subtopic name"
             />
             <input
               type="text"
@@ -180,16 +180,16 @@ export default function Home() {
               onChange={(e) =>
                 setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
-              placeholder="URL (opcional)"
+              placeholder="URL (optional)"
             />
             <textarea
               value={newSubtopicContent[currentTopicId] || ""}
               onChange={(e) =>
                 setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
               }
-              placeholder="Conteúdo do subtópico"
+              placeholder="Subtopic content"
             />
-            <button onClick={addSubtopic}>Adicionar</button>
+            <button onClick={addSubtopic}>Add</button>
           </div>
         </div>
       )}

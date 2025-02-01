@@ -116,7 +116,6 @@ button:hover {
   min-width: 300px;
 }
 
-
 .modal-header {
   display: flex;
   align-items: left;
@@ -186,18 +185,33 @@ textarea {
   border: none;
   cursor: pointer;
   text-decoration: none;
-  margin-top: 5px;
+  margin-top: 3%;
 }
 
 .content-button:hover {
   background-color: #007bff;
 }
 
-
 /* Responsividade */
 @media (max-width: 480px) {
+
+  button {
+    font-size: medium;
+    font-weight: 600;
+  }
   .modal-content {
     width: 95%;
+    font-weight: 900;
+  }
+
+  .modal-close {
+    margin-top: -1%;
+    margin-left: 77%;
+  }
+
+  .modal-close-content {
+    margin-top: -1%;
+    margin-left: 77%;
   }
 }
 
