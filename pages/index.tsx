@@ -131,8 +131,8 @@ export default function Home() {
                   <a href={subtopic.url} target="_blank" rel="noopener noreferrer">
                     {subtopic.title}
                   </a>
-                </span>                
-                {subtopic.content && <p>{subtopic.content}</p>}
+                </span>
+                {subtopic.content && <p className="content">{subtopic.content}</p>}  
               </li>
             ))}
           </ul>

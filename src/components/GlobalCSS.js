@@ -68,6 +68,10 @@ h1 {
   margin-left: 2%;
 }
 
+.content {
+  margin-top: 2%;
+}
+
 ul {
     list-style-type:none;
 }
