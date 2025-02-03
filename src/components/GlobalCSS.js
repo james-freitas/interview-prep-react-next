@@ -192,6 +192,42 @@ textarea {
   background-color: #007bff;
 }
 
+
+.topic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topic-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  flex-grow: 1; /* Ocupa o espaço disponível */
+}
+
+.delete-button {
+  margin-top: -1%;
+  margin-left: 17%;
+  cursor: pointer;
+  position: absolute;
+  font-size: 16px; /* Reduce font size */
+  border: none;
+  background:rgb(247, 227, 224);
+  padding: 5px 10px; /* Reduce padding */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px; /* Set a fixed width */
+  height: 30px; /* Set a fixed height */
+  border-radius: 10%; /* Make it circular */
+}
+
+.delete-button:hover {
+  color: #c82333; /* Tom mais escuro ao passar o mouse */
+}
+
+
 /* Responsividade */
 @media (max-width: 480px) {
 
@@ -212,6 +248,23 @@ textarea {
   .modal-close-content {
     margin-top: -1%;
     margin-left: 77%;
+  }
+
+  .delete-button {
+    margin-top: -1%;
+    margin-left: 64%;
+    cursor: pointer;
+    position: absolute;
+    font-size: 16px; /* Reduce font size */
+    border: none;
+    background:rgb(247, 227, 224);
+    padding: 5px 10px; /* Reduce padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px; /* Set a fixed width */
+    height: 30px; /* Set a fixed height */
+    border-radius: 10%; /* Make it circular */
   }
 }
 

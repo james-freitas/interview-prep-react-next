@@ -112,13 +112,26 @@ export default function Home() {
     setIsContentModalOpen(false);
     setSelectedSubtopic(null);
   };
+
+  const deleteTopic = async (topicId: number) => {
+    const { error } = await supabase.from("topics").delete().eq("id", topicId);
+  
+    if (error) {
+      console.error("Erro ao excluir o tópico:", error);
+      return;
+    }
+  
+    // Atualiza a lista de topics após a exclusão
+    fetchTopics();
+  };
+  
   
 
   return (
     <>
       <GlobalCSS />
       <div className="container">
-        <h1>Add New Topic</h1>
+        <h2>Add New Topic</h2>
         <div className="form-container">          
           <input
             type="text"
@@ -132,7 +145,14 @@ export default function Home() {
 
       {topics.map((topic) => (
         <div key={topic.id} className="topic">
-          <h2 className="topic-title">{topic.title}</h2>
+  <div className="topic-header">
+    <h3 className="topic-title">
+      {topic.title.length > 20 ? topic.title.substring(0, 20) + "..." : topic.title}
+    </h3>
+    <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
+      🗑️
+    </button>
+  </div>
           <ul>
             {topic.subtopics.map((subtopic) => (
               <li key={subtopic.id} className="subtopic">
@@ -151,13 +171,13 @@ export default function Home() {
                     View Additional Content
                   </button>
                 )}
-  
               </li>
             ))}
           </ul>
           <button onClick={() => openModal(topic.id)}>Add Subtopic</button>
         </div>
       ))}
+
 
       {isModalOpen && (
         <div className="modal" onClick={closeModal}>
