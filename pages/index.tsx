@@ -28,7 +28,9 @@ export default function Home() {
   const [currentTopicId, setCurrentTopicId] = useState<number | null>(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State for edit modal
+  const [editTopicTitle, setEditTopicTitle] = useState(""); // State for edited topic title
+  const [editTopicId, setEditTopicId] = useState<number | null>(null); // State for topic ID being edited
 
   useEffect(() => {
     fetchTopics();
@@ -125,6 +127,36 @@ export default function Home() {
     fetchTopics();
   };
   
+  // Open edit modal and set the current topic title and ID
+  const openEditModal = (topicId: number, currentTitle: string) => {
+    setEditTopicId(topicId);
+    setEditTopicTitle(currentTitle);
+    setIsEditModalOpen(true);
+  };
+
+  // Close edit modal
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditTopicId(null);
+    setEditTopicTitle("");
+  };
+
+  // Update topic title
+  const updateTopic = async () => {
+    if (!editTopicId || !editTopicTitle.trim()) return;
+    const { error } = await supabase
+      .from("topics")
+      .update({ title: editTopicTitle })
+      .eq("id", editTopicId);
+
+    if (error) {
+      console.error("Erro ao atualizar o tópico:", error);
+      return;
+    }
+
+    closeEditModal();
+    fetchTopics();
+  };
   
 
   return (
@@ -149,9 +181,14 @@ export default function Home() {
             <h3 className="topic-title">
               {topic.title.length > 20 ? topic.title.substring(0, 20) + "..." : topic.title}
             </h3>
-            <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
-              🗑️
-            </button>
+            
+              <button className="edit-button" onClick={() => openEditModal(topic.id, topic.title)}>
+                ✏️
+              </button>
+              <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
+                🗑️
+              </button>
+            
           </div>
           <ul>
             {topic.subtopics.map((subtopic) => (
@@ -225,6 +262,25 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {isEditModalOpen && (
+        <div className="modal" onClick={closeEditModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Edit Topic</h2>
+              <button className="modal-close" onClick={closeEditModal}>&times;</button>
+            </div>
+            <input
+              type="text"
+              value={editTopicTitle}
+              onChange={(e) => setEditTopicTitle(e.target.value)}
+              placeholder="Topic name"
+            />
+            <button onClick={updateTopic}>Update</button>
+          </div>
+        </div>
+      )}
+
     </>
   );
 }

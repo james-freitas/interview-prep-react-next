@@ -222,7 +222,27 @@ textarea {
 }
 
 .delete-button:hover {
-  color: #c82333; /* Tom mais escuro ao passar o mouse */
+  background-color:rgb(199, 63, 77);
+}
+
+/* Edit button */
+.edit-button {
+  cursor: pointer;
+  font-size: 16px;
+  border: none;
+  background: rgb(224, 247, 224);
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10%;
+  margin-left: 5px; /* Spacing between edit and delete buttons */
+}
+
+.edit-button:hover {
+  background: rgb(180, 230, 180);
 }
 
 
