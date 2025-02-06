@@ -118,12 +118,17 @@ button:hover {
 
 .modal-header {
   display: flex;
-  align-items: left;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .modal-header h2 {
   font-size: 20px;
-  margin-left: 0%;
+  margin: 0;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
   padding-bottom: 2%;
 }
 
@@ -146,9 +151,8 @@ button:hover {
 
 .modal-close {
   margin-top: -1%;
-  margin-left: 46%;
+  margin-right: auto;
   cursor: pointer;
-  position: absolute;
   font-size: 16px; /* Reduce font size */
   border: none;
   background:rgb(82, 79, 245);
@@ -191,7 +195,6 @@ textarea {
 .content-button:hover {
   background-color: #007bff;
 }
-
 
 .topic-header {
   display: flex;
@@ -265,7 +268,6 @@ textarea {
 
   .modal-close {
     margin-top: -1%;
-    margin-left: 77%;
   }
 
   .modal-close-content {
