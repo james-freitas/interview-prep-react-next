@@ -204,6 +204,9 @@ textarea {
   font-weight: bold;
   margin: 0;
   flex-grow: 1; /* Ocupa o espaço disponível */
+  display: flex;
+  align-items: center;
+  height: 100%; /* Takes full height of the parent */
 }
 
 .delete-button {
@@ -218,7 +221,8 @@ textarea {
   width: 30px;
   height: 30px;
   border-radius: 10%;
-  margin-left: 10px; /* Add some spacing between the title and the button */
+  margin-left: 5px; /* Add some spacing between the title and the button */
+  margin-top: auto;
 }
 
 .delete-button:hover {
@@ -239,6 +243,7 @@ textarea {
   height: 30px;
   border-radius: 10%;
   margin-left: 5px; /* Spacing between edit and delete buttons */
+  margin-top: auto;
 }
 
 .edit-button:hover {
