@@ -145,14 +145,14 @@ export default function Home() {
 
       {topics.map((topic) => (
         <div key={topic.id} className="topic">
-  <div className="topic-header">
-    <h3 className="topic-title">
-      {topic.title.length > 20 ? topic.title.substring(0, 20) + "..." : topic.title}
-    </h3>
-    <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
-      🗑️
-    </button>
-  </div>
+          <div className="topic-header">
+            <h3 className="topic-title">
+              {topic.title.length > 20 ? topic.title.substring(0, 20) + "..." : topic.title}
+            </h3>
+            <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
+              🗑️
+            </button>
+          </div>
           <ul>
             {topic.subtopics.map((subtopic) => (
               <li key={subtopic.id} className="subtopic">

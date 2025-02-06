@@ -207,20 +207,18 @@ textarea {
 }
 
 .delete-button {
-  margin-top: -1%;
-  margin-left: 17%;
   cursor: pointer;
-  position: absolute;
-  font-size: 16px; /* Reduce font size */
+  font-size: 16px;
   border: none;
-  background:rgb(247, 227, 224);
-  padding: 5px 10px; /* Reduce padding */
+  background: rgb(247, 227, 224);
+  padding: 5px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px; /* Set a fixed width */
-  height: 30px; /* Set a fixed height */
-  border-radius: 10%; /* Make it circular */
+  width: 30px;
+  height: 30px;
+  border-radius: 10%;
+  margin-left: 10px; /* Add some spacing between the title and the button */
 }
 
 .delete-button:hover {
@@ -251,20 +249,7 @@ textarea {
   }
 
   .delete-button {
-    margin-top: -1%;
-    margin-left: 64%;
-    cursor: pointer;
-    position: absolute;
-    font-size: 16px; /* Reduce font size */
-    border: none;
-    background:rgb(247, 227, 224);
-    padding: 5px 10px; /* Reduce padding */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px; /* Set a fixed width */
-    height: 30px; /* Set a fixed height */
-    border-radius: 10%; /* Make it circular */
+    margin-left: 5px; /* Reduce spacing on smaller screens */
   }
 }
 
