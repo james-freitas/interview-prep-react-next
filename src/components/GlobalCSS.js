@@ -136,7 +136,6 @@ button:hover {
   margin-top: -1%;
   margin-left: 33%;
   cursor: pointer;
-  position: absolute;
   font-size: 16px; /* Reduce font size */
   border: none;
   background:rgb(82, 79, 245);
@@ -261,6 +260,7 @@ textarea {
     font-size: medium;
     font-weight: 600;
   }
+
   .modal-content {
     width: 95%;
     font-weight: 900;
@@ -272,7 +272,6 @@ textarea {
 
   .modal-close-content {
     margin-top: -1%;
-    margin-left: 77%;
   }
 
   .delete-button {
