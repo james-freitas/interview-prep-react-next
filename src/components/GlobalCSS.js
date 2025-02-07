@@ -80,6 +80,10 @@ a {
   text-decoration: none;
 }
 
+a:link, a:visited {
+  color: #001188; /* Replace with your desired color */
+}
+
 /* Botões */
 button {
   background-color: #007bff;
