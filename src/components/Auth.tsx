@@ -16,11 +16,10 @@ export default function Auth() {
 
     if (isLogin) {
       // Login
-      const { user, error: loginError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (loginError) {
         setError(loginError.message);
@@ -29,7 +28,7 @@ export default function Auth() {
       }
     } else {
       // Cadastro
-      const { user, error: signupError } = await supabase.auth.signUp({
+      const { error: signupError } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -45,7 +44,7 @@ export default function Auth() {
   };
 
   const handleGoogleLogin = async () => {
-    const { user, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
 
