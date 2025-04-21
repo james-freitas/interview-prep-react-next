@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabase";
 import { GlobalCSS } from "../src/components/GlobalCSS";
 import Auth from "../src/components/Auth";
 import { Session } from "@supabase/supabase-js";
+import AddTopicForm from "../src/components/AddTopicForm/AddTopicForm";
 
 interface Subtopic {
   id: number;
@@ -226,21 +227,12 @@ export default function Home() {
   return (
     <>
       <GlobalCSS />
-      <div className="container">
-        <h2>Add New Topic</h2>
-        <div className="form-container">
-          <input
-            type="text"
-            value={newTopic}
-            onChange={(e) => setNewTopic(e.target.value)}
-            placeholder="Topic name"
-          />
-          <button onClick={addTopic}>Add Topic</button>
-          <button onClick={logout} style={{ marginLeft: "10px" }}>
-            Sair
-          </button>
-        </div>
-      </div>
+      <AddTopicForm
+        newTopic={newTopic}
+        setNewTopic={setNewTopic}
+        addTopic={addTopic}
+        logout={logout}
+      />
 
       {topics.map((topic) => (
         <div key={topic.id} className="topic">
