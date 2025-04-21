@@ -4,23 +4,8 @@ import { GlobalCSS } from "../src/components/GlobalCSS";
 import Auth from "../src/components/Auth";
 import { Session } from "@supabase/supabase-js";
 import AddTopicForm from "../src/components/AddTopicForm/AddTopicForm";
-
-interface Subtopic {
-  id: number;
-  title: string;
-  completed: boolean;
-  topic_id: number;
-  content?: string;
-  url?: string;
-}
-
-interface Topic {
-  id: number;
-  title: string;
-  created_at: string;
-  user_id: string;
-  subtopics: Subtopic[];
-}
+import { Topic } from "../types/Topic";
+import { Subtopic } from "../types/Subtopic";
 
 export default function Home() {
   // State for managing user session
