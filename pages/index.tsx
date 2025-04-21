@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { supabase } from '../lib/supabase';
+import { supabase } from "../lib/supabase";
 import { GlobalCSS } from "../src/components/GlobalCSS";
+import Auth from "../src/components/Auth";
+import { Session } from "@supabase/supabase-js";
 
 interface Subtopic {
   id: number;
@@ -15,33 +17,57 @@ interface Topic {
   id: number;
   title: string;
   created_at: string;
+  user_id: string;
   subtopics: Subtopic[];
 }
 
 export default function Home() {
+  const [session, setSession] = useState<Session | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [newTopic, setNewTopic] = useState("");
   const [newSubtopic, setNewSubtopic] = useState<{ [key: number]: string }>({});
-  const [newSubtopicUrl, setNewSubtopicUrl] = useState<{ [key: number]: string }>({});
-  const [newSubtopicContent, setNewSubtopicContent] = useState<{ [key: number]: string }>({});
+  const [newSubtopicUrl, setNewSubtopicUrl] = useState<{
+    [key: number]: string;
+  }>({});
+  const [newSubtopicContent, setNewSubtopicContent] = useState<{
+    [key: number]: string;
+  }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTopicId, setCurrentTopicId] = useState<number | null>(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
-  const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State for edit modal
-  const [editTopicTitle, setEditTopicTitle] = useState(""); // State for edited topic title
-  const [editTopicId, setEditTopicId] = useState<number | null>(null); // State for topic ID being edited
+  const [selectedSubtopic, setSelectedSubtopic] = useState<Subtopic | null>(
+    null
+  );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTopicTitle, setEditTopicTitle] = useState("");
+  const [editTopicId, setEditTopicId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchTopics();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) fetchTopics(session.user.id);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) fetchTopics(session.user.id);
+      else setTopics([]);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const fetchTopics = async () => {
-    let { data: topicsData, error: topicsError } = await supabase
+  const fetchTopics = async (userId: string) => {
+    const { data: topicsData, error: topicsError } = await supabase
       .from("topics")
-      .select("*");
+      .select("*")
+      .eq("user_id", userId);
 
-    let { data: subtopicsData, error: subtopicsError } = await supabase
+    const { data: subtopicsData, error: subtopicsError } = await supabase
       .from("subtopics")
       .select("id, title, completed, topic_id, url, content");
 
@@ -52,33 +78,45 @@ export default function Home() {
 
     const topicsWithSubtopics = topicsData?.map((topic) => ({
       ...topic,
-      subtopics: subtopicsData?.filter((sub) => sub.topic_id === topic.id) || [],
+      subtopics:
+        subtopicsData?.filter((sub) => sub.topic_id === topic.id) || [],
     }));
 
     setTopics(topicsWithSubtopics);
   };
 
   const addTopic = async () => {
-    if (!newTopic.trim()) return;
-    await supabase.from("topics").insert([{ title: newTopic }]);
+    if (!newTopic.trim() || !session) return;
+
+    await supabase
+      .from("topics")
+      .insert([{ title: newTopic, user_id: session.user.id }]);
+
     setNewTopic("");
-    fetchTopics();
+    fetchTopics(session.user.id);
   };
 
   const toggleSubtopic = async (subtopicId: number, completed: boolean) => {
-    await supabase
+    if (!session) return;
+
+    const { error } = await supabase
       .from("subtopics")
       .update({ completed: !completed })
-      .eq("id", subtopicId);
-    fetchTopics();
+      .eq("id", subtopicId)
+      .eq("user_id", session.user.id); // <- Filtro por usuário
+
+    if (error) {
+      console.error("Erro ao atualizar subtopic:", error.message);
+      return;
+    }
+
+    fetchTopics(session.user.id);
   };
 
   const openModal = (topicId: number) => {
-    console.log("Abrindo modal para o tópico:", topicId);
     setCurrentTopicId(topicId);
     setIsModalOpen(true);
   };
-  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -86,85 +124,88 @@ export default function Home() {
   };
 
   const addSubtopic = async () => {
-    if (!currentTopicId || !newSubtopic[currentTopicId]?.trim()) return;
-    await supabase
-      .from("subtopics")
-      .insert([
-        { 
-          title: newSubtopic[currentTopicId], 
-          topic_id: currentTopicId, 
-          completed: false,
-          url: newSubtopicUrl[currentTopicId] || "", 
-          content: newSubtopicContent[currentTopicId] || ""  
-        }
-      ]);
+    if (!currentTopicId || !session || !newSubtopic[currentTopicId]?.trim())
+      return;
+
+    const { error } = await supabase.from("subtopics").insert([
+      {
+        title: newSubtopic[currentTopicId],
+        topic_id: currentTopicId,
+        completed: false,
+        url: newSubtopicUrl[currentTopicId] || "",
+        content: newSubtopicContent[currentTopicId] || "",
+        user_id: session.user.id,
+      },
+    ]);
+
+    if (error) {
+      console.error("Erro ao adicionar subtópico:", error.message);
+      return;
+    }
+
     setNewSubtopic((prev) => ({ ...prev, [currentTopicId]: "" }));
     setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId]: "" }));
     setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId]: "" }));
     closeModal();
-    fetchTopics();
+    fetchTopics(session.user.id);
   };
 
   const openContentModal = (subtopic: Subtopic) => {
     setSelectedSubtopic(subtopic);
     setIsContentModalOpen(true);
   };
-  
+
   const closeContentModal = () => {
     setIsContentModalOpen(false);
     setSelectedSubtopic(null);
   };
 
   const deleteTopic = async (topicId: number) => {
-    const { error } = await supabase.from("topics").delete().eq("id", topicId);
-  
-    if (error) {
-      console.error("Erro ao excluir o tópico:", error);
-      return;
-    }
-  
-    // Atualiza a lista de topics após a exclusão
-    fetchTopics();
+    await supabase.from("topics").delete().eq("id", topicId);
+    if (session) fetchTopics(session.user.id);
   };
-  
-  // Open edit modal and set the current topic title and ID
+
   const openEditModal = (topicId: number, currentTitle: string) => {
     setEditTopicId(topicId);
     setEditTopicTitle(currentTitle);
     setIsEditModalOpen(true);
   };
 
-  // Close edit modal
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setEditTopicId(null);
     setEditTopicTitle("");
   };
 
-  // Update topic title
   const updateTopic = async () => {
     if (!editTopicId || !editTopicTitle.trim()) return;
-    const { error } = await supabase
+    await supabase
       .from("topics")
       .update({ title: editTopicTitle })
       .eq("id", editTopicId);
-
-    if (error) {
-      console.error("Erro ao atualizar o tópico:", error);
-      return;
-    }
-
     closeEditModal();
-    fetchTopics();
+    if (session) fetchTopics(session.user.id);
   };
-  
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+  };
+
+  if (!session) {
+    return (
+      <>
+        <GlobalCSS />
+        <Auth />
+      </>
+    );
+  }
 
   return (
     <>
       <GlobalCSS />
       <div className="container">
         <h2>Add New Topic</h2>
-        <div className="form-container">          
+        <div className="form-container">
           <input
             type="text"
             value={newTopic}
@@ -172,6 +213,9 @@ export default function Home() {
             placeholder="Topic name"
           />
           <button onClick={addTopic}>Add Topic</button>
+          <button onClick={logout} style={{ marginLeft: "10px" }}>
+            Sair
+          </button>
         </div>
       </div>
 
@@ -179,16 +223,22 @@ export default function Home() {
         <div key={topic.id} className="topic">
           <div className="topic-header">
             <h3 className="topic-title">
-              {topic.title.length > 20 ? topic.title.substring(0, 20) + "..." : topic.title}
+              {topic.title.length > 20
+                ? topic.title.substring(0, 20) + "..."
+                : topic.title}
             </h3>
-            
-              <button className="edit-button" onClick={() => openEditModal(topic.id, topic.title)}>
-                ✏️
-              </button>
-              <button className="delete-button" onClick={() => deleteTopic(topic.id)}>
-                🗑️
-              </button>
-            
+            <button
+              className="edit-button"
+              onClick={() => openEditModal(topic.id, topic.title)}
+            >
+              ✏️
+            </button>
+            <button
+              className="delete-button"
+              onClick={() => deleteTopic(topic.id)}
+            >
+              🗑️
+            </button>
           </div>
           <ul>
             {topic.subtopics.map((subtopic) => (
@@ -196,15 +246,26 @@ export default function Home() {
                 <input
                   type="checkbox"
                   checked={subtopic.completed}
-                  onChange={() => toggleSubtopic(subtopic.id, subtopic.completed)}
+                  onChange={() =>
+                    toggleSubtopic(subtopic.id, subtopic.completed)
+                  }
                 />
-                <span className={subtopic.completed ? "completed" : "not-completed"}>
-                  <a href={subtopic.url} target="_blank" rel="noopener noreferrer">
+                <span
+                  className={subtopic.completed ? "completed" : "not-completed"}
+                >
+                  <a
+                    href={subtopic.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {subtopic.title}
                   </a>
                 </span>
                 {subtopic.content && (
-                  <button className="content-button" onClick={() => openContentModal(subtopic)}>
+                  <button
+                    className="content-button"
+                    onClick={() => openContentModal(subtopic)}
+                  >
                     View Additional Content
                   </button>
                 )}
@@ -215,34 +276,44 @@ export default function Home() {
         </div>
       ))}
 
-
       {isModalOpen && (
         <div className="modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Add Subtopic</h2>
-              <button className="modal-close" onClick={closeModal}>&times;</button>
+              <button className="modal-close" onClick={closeModal}>
+                &times;
+              </button>
             </div>
             <input
               type="text"
-              value={newSubtopic[currentTopicId] || ""}
+              value={newSubtopic[currentTopicId ?? -1] || ""}
               onChange={(e) =>
-                setNewSubtopic((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
+                setNewSubtopic((prev) => ({
+                  ...prev,
+                  [currentTopicId ?? -1]: e.target.value,
+                }))
               }
               placeholder="Subtopic name"
             />
             <input
               type="text"
-              value={newSubtopicUrl[currentTopicId] || ""}
+              value={newSubtopicUrl[currentTopicId ?? -1] || ""}
               onChange={(e) =>
-                setNewSubtopicUrl((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
+                setNewSubtopicUrl((prev) => ({
+                  ...prev,
+                  [currentTopicId ?? -1]: e.target.value,
+                }))
               }
               placeholder="URL (optional)"
             />
             <textarea
-              value={newSubtopicContent[currentTopicId] || ""}
+              value={newSubtopicContent[currentTopicId ?? -1] || ""}
               onChange={(e) =>
-                setNewSubtopicContent((prev) => ({ ...prev, [currentTopicId]: e.target.value }))
+                setNewSubtopicContent((prev) => ({
+                  ...prev,
+                  [currentTopicId ?? -1]: e.target.value,
+                }))
               }
               placeholder="Subtopic content"
             />
@@ -256,7 +327,12 @@ export default function Home() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{selectedSubtopic.title}</h2>
-              <button className="modal-close-content" onClick={closeContentModal}>&times;</button>
+              <button
+                className="modal-close-content"
+                onClick={closeContentModal}
+              >
+                &times;
+              </button>
             </div>
             <p>{selectedSubtopic.content}</p>
           </div>
@@ -268,7 +344,9 @@ export default function Home() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Edit Topic</h2>
-              <button className="modal-close" onClick={closeEditModal}>&times;</button>
+              <button className="modal-close" onClick={closeEditModal}>
+                &times;
+              </button>
             </div>
             <input
               type="text"
@@ -280,7 +358,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
     </>
   );
 }
