@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { GlobalCSS } from "../src/components/GlobalCSS";
 import Auth from "../src/components/Auth";
@@ -22,9 +22,16 @@ interface Topic {
 }
 
 export default function Home() {
+  // State for managing user session
   const [session, setSession] = useState<Session | null>(null);
+
+  // State for managing topics and their subtopics
   const [topics, setTopics] = useState<Topic[]>([]);
+
+  // State for new topic input
   const [newTopic, setNewTopic] = useState("");
+
+  // State for new subtopic inputs
   const [newSubtopic, setNewSubtopic] = useState<{ [key: number]: string }>({});
   const [newSubtopicUrl, setNewSubtopicUrl] = useState<{
     [key: number]: string;
@@ -32,6 +39,8 @@ export default function Home() {
   const [newSubtopicContent, setNewSubtopicContent] = useState<{
     [key: number]: string;
   }>({});
+
+  // State for modal management
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTopicId, setCurrentTopicId] = useState<number | null>(null);
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
@@ -61,56 +70,65 @@ export default function Home() {
     };
   }, []);
 
+  // Use async/await consistently and handle errors properly
   const fetchTopics = async (userId: string) => {
-    const { data: topicsData, error: topicsError } = await supabase
-      .from("topics")
-      .select("*")
-      .eq("user_id", userId);
+    try {
+      const { data: topicsData, error: topicsError } = await supabase
+        .from("topics")
+        .select("*")
+        .eq("user_id", userId);
 
-    const { data: subtopicsData, error: subtopicsError } = await supabase
-      .from("subtopics")
-      .select("id, title, completed, topic_id, url, content");
+      if (topicsError) throw topicsError;
 
-    if (topicsError || subtopicsError) {
-      console.error("Erro ao buscar dados:", topicsError || subtopicsError);
-      return;
+      const { data: subtopicsData, error: subtopicsError } = await supabase
+        .from("subtopics")
+        .select("id, title, completed, topic_id, url, content");
+
+      if (subtopicsError) throw subtopicsError;
+
+      const topicsWithSubtopics = topicsData?.map((topic) => ({
+        ...topic,
+        subtopics:
+          subtopicsData?.filter((sub) => sub.topic_id === topic.id) || [],
+      }));
+
+      setTopics(topicsWithSubtopics);
+    } catch (error) {
+      console.error("Error fetching topics or subtopics:", error);
     }
-
-    const topicsWithSubtopics = topicsData?.map((topic) => ({
-      ...topic,
-      subtopics:
-        subtopicsData?.filter((sub) => sub.topic_id === topic.id) || [],
-    }));
-
-    setTopics(topicsWithSubtopics);
   };
 
+  // Function to add a new topic
   const addTopic = async () => {
     if (!newTopic.trim() || !session) return;
 
-    await supabase
-      .from("topics")
-      .insert([{ title: newTopic, user_id: session.user.id }]);
+    try {
+      await supabase
+        .from("topics")
+        .insert([{ title: newTopic, user_id: session.user.id }]);
 
-    setNewTopic("");
-    fetchTopics(session.user.id);
+      setNewTopic("");
+      fetchTopics(session.user.id);
+    } catch (error) {
+      console.error("Error adding topic:", error);
+    }
   };
 
+  // Function to toggle subtopic completion status
   const toggleSubtopic = async (subtopicId: number, completed: boolean) => {
     if (!session) return;
 
-    const { error } = await supabase
-      .from("subtopics")
-      .update({ completed: !completed })
-      .eq("id", subtopicId)
-      .eq("user_id", session.user.id); // <- Filtro por usuário
+    try {
+      await supabase
+        .from("subtopics")
+        .update({ completed: !completed })
+        .eq("id", subtopicId)
+        .eq("user_id", session.user.id);
 
-    if (error) {
-      console.error("Erro ao atualizar subtopic:", error.message);
-      return;
+      fetchTopics(session.user.id);
+    } catch (error) {
+      console.error("Error updating subtopic:", error);
     }
-
-    fetchTopics(session.user.id);
   };
 
   const openModal = (topicId: number) => {
@@ -187,8 +205,13 @@ export default function Home() {
     if (session) fetchTopics(session.user.id);
   };
 
+  // Function to handle logout
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   if (!session) {
