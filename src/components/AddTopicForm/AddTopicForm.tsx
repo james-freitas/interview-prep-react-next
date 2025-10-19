@@ -24,9 +24,7 @@ const AddTopicForm: React.FC<AddTopicFormProps> = ({
           placeholder="Topic name"
         />
         <button onClick={addTopic}>Add Topic</button>
-        <button onClick={logout} style={{ marginLeft: "10px" }}>
-          Logout
-        </button>
+        <button onClick={logout}>Logout</button>
       </div>
     </div>
   );
