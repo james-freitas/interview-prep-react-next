@@ -1,143 +1,145 @@
-
 # 🧠 Topic & Subtopic Tracker
 
-Uma aplicação web simples e moderna construída com React, Supabase e TypeScript que permite que cada usuário crie, edite, visualize e acompanhe seus próprios **tópicos e subtópicos de estudo**, com suporte a links, anotações e autenticação.
+A simple, modern web application built with React, Supabase, and TypeScript that lets each user create, edit, view, and track their own study topics and subtopics, with support for external links, notes, and authentication.
 
-## 🚀 Tecnologias utilizadas
+## 🚀 Technologies
 
 - [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Supabase](https://supabase.io/) (Banco de dados, autenticação e API)
+- [Supabase](https://supabase.io/) (database, authentication, API)
 - [CSS Modules](https://github.com/css-modules/css-modules)
 
 ---
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-- **Email/Senha** e **Login com Google**
-- Cada usuário enxerga **somente seus próprios tópicos e subtópicos**
-
----
-
-## ✍️ Funcionalidades
-
-### Tópicos
-- ✅ Criar novo tópico
-- ✏️ Editar título de tópico
-- 🗑️ Excluir tópico
-
-### Subtópicos
-- ✅ Adicionar subtópico com:
-  - Título
-  - Link externo (opcional)
-  - Conteúdo (opcional)
-- ✅ Marcar como concluído ou não
-- 🔎 Visualizar conteúdo adicional do subtópico
-
-### Autenticação
-- Login com **email/senha**
-- Cadastro de novos usuários
-- Login com **Google**
+- Email/password and Google sign-in
+- Each user sees only their own topics and subtopics
 
 ---
 
-## 📁 Estrutura de diretórios
+## ✍️ Features
+
+### Topics
+
+- ✅ Create a new topic
+- ✏️ Edit a topic title
+- 🗑️ Delete a topic
+
+### Subtopics
+
+- ✅ Add a subtopic with:
+  - Title
+  - External link (optional)
+  - Content/notes (optional)
+- ✅ Mark as completed or not
+- 🔎 View additional subtopic content
+
+### Authentication
+
+- Login with email/password
+- Register new users
+- Login with Google
+
+---
+
+## 📁 Project structure
 
 ```bash
 .
-├── index.tsx               # Página principal da aplicação
+├── index.tsx               # Main application page
 ├── src/
 │   └── components/
-│       ├── Auth.tsx       # Componente de autenticação
-│       └── GlobalCSS.tsx  # Estilos globais
+│       ├── Auth.tsx        # Authentication component
+│       └── GlobalCSS.tsx   # Global styles
 ├── lib/
-│   └── supabase.ts        # Cliente Supabase
+│   └── supabase.ts         # Supabase client
 └── styles/
-    └── Auth.module.css    # Estilo específico do componente Auth
+    └── Auth.module.css     # Auth component styles
 ```
 
 ---
 
-## 🛠️ Como executar localmente
+## 🛠️ Running locally
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js v18+
-- Conta no [Supabase](https://app.supabase.com/)
+- A Supabase account: https://app.supabase.com/
 
-### 1. Clone o projeto
+### 1. Clone the repo
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repo.git
-cd seu-repo
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
 ```
 
-### 2. Instale as dependências
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure o Supabase
+### 3. Configure Supabase
 
-Crie um arquivo `.env.local` com as variáveis:
+Create a `.env.local` file with the variables:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-Ou configure diretamente no arquivo `lib/supabase.ts`.
+Or set these values directly in `lib/supabase.ts`.
 
-### 4. Execute o projeto
+### 4. Start the app
 
 ```bash
 npm run dev
 ```
 
-Acesse em: [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000
 
 ---
 
-## 🧪 Tabelas no Supabase
+## 🧪 Database tables (Supabase)
 
-### Tabela: `topics`
+### `topics`
 
-| Coluna     | Tipo     |
-|------------|----------|
-| id         | integer  |
-| title      | text     |
-| user_id    | uuid     |
+| Column     | Type        |
+| ---------- | ----------- |
+| id         | integer     |
+| title      | text        |
+| user_id    | uuid        |
 | created_at | timestamptz |
 
-### Tabela: `subtopics`
+### `subtopics`
 
-| Coluna     | Tipo     |
-|------------|----------|
-| id         | integer  |
-| title      | text     |
-| topic_id   | integer  |
-| user_id    | uuid     |
-| completed  | boolean  |
-| url        | text     |
-| content    | text     |
-
----
-
-## 📌 To Do
-
-- [ ] Suporte a tags por tópico
-- [ ] Filtro por tópicos concluídos / pendentes
-- [ ] Upload de imagens nos subtópicos
+| Column    | Type    |
+| --------- | ------- |
+| id        | integer |
+| title     | text    |
+| topic_id  | integer |
+| user_id   | uuid    |
+| completed | boolean |
+| url       | text    |
+| content   | text    |
 
 ---
 
-## 🧑‍💻 Autor
+## 📌 Roadmap
 
-Feito com ❤️ por [Seu Nome](https://github.com/seu-usuario)
+- [ ] Tags support per topic
+- [ ] Filter by completed / pending topics
+- [ ] Image uploads for subtopics
 
 ---
 
-## 📄 Licença
+## 🧑‍💻 Author
 
-Este projeto está sob a licença MIT.
+Made with ❤️ by [Your Name](https://github.com/your-username)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
