@@ -6,6 +6,7 @@ import { Session } from "@supabase/supabase-js";
 import AddTopicForm from "../src/components/AddTopicForm/AddTopicForm";
 import { Topic } from "../types/Topic";
 import { Subtopic } from "../types/Subtopic";
+import { topicService } from "../src/services/topicService";
 
 // Main Home component for the app
 export default function Home() {
@@ -63,12 +64,7 @@ export default function Home() {
   // Fetch topics and their subtopics for the current user
   const fetchTopics = async (userId: string) => {
     try {
-      const { data: topicsData, error: topicsError } = await supabase
-        .from("topics")
-        .select("*")
-        .eq("user_id", userId);
-
-      if (topicsError) throw topicsError;
+      const topicsData = await topicService.getUserTopics(userId);
 
       const { data: subtopicsData, error: subtopicsError } = await supabase
         .from("subtopics")
